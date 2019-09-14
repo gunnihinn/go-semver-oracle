@@ -8,6 +8,40 @@ This project combines two of my petty peeves:
 - Prefixing the names of Golang projects with 'go'
 - Semantic versioning
 
+If I have a point with this, it's that the semantic versions are consistently
+underestimated, and that in practice almost all such version bumps should be
+major ones.
+
+== Limitations
+
+This software can only ever compute a lower bound on semantic version
+difference because of the halting problem. To take a less dramatic example,
+consider the following package:
+
+----
+package foo
+
+func Bar() *int { x := 1729; return &x }
+----
+
+If we change this package to
+
+----
+package foo
+
+func Bar() *int { return nil }
+----
+
+the oracle will report only a patch version bump, but the behavior of the
+package has arguably changed in a non-backwards-compatible way (the invariant
+`foo.Bar() != nil` broke), so it should get a major version bump.
+
+One can come up with less contrived examples, but the larger point is that
+static analysis can only infer so much about the runtime behavior of a system,
+so our computations will always be based on a subset of the effective changes
+between versions. Thus we can only say that the software changed *at least* this
+much between versions.
+
 == License
 
 This software is licensed under the GPLv3. See `LICENSE` for a copy.
