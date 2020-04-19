@@ -6,10 +6,10 @@ on the semantic versioning difference between them.
 This project combines two of my petty peeves:
 
 - Prefixing the names of Golang projects with 'go'
-- Semantic versioning
+- https://semver.org/[Semantic versioning]
 
-If I have a point with this, it's that the semantic versions are consistently
-underestimated, and that in practice almost all such version bumps should be
+If I have a point with this, beyond curmudgery, it's that the semantic versions
+are consistently underestimated and that almost all such version bumps should be
 major ones.
 
 == Limitations
