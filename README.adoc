@@ -1,5 +1,7 @@
 = Golang semantic versioning oracle
 
+image::static/under-construction.gif[Under construction]
+
 `go-semver-oracle` compares two versions of software and computes a lower bound
 on the semantic versioning difference between them.
 

@@ -9,17 +9,6 @@ Golang semantic versioning oracle
 ``go-semver-oracle`` compares two versions of software and computes a lower bound
 on the semantic versioning difference between them.
 
-This project combines two of my petty peeves:
-
-* Prefixing the names of Golang projects with "go"
-* `Semantic versioning <https://semver.org/>`_
-
-If I have a point with this, beyond curmudgery, it's that the semantic versions
-are consistently underestimated and that almost all such version bumps should be
-major ones.
-
-
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
