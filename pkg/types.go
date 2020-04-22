@@ -34,6 +34,21 @@ const (
 	Major               // Major semver difference.
 )
 
+func max(as ...Result) Result {
+	if len(as) == 0 {
+		panic("Empty input")
+	}
+
+	m := as[0]
+	for _, a := range as[1:] {
+		if a > m {
+			m = a
+		}
+	}
+
+	return m
+}
+
 // Cmp computes the semver difference from a to b.
 func Cmp(a, b Identifiable) Result {
 	if !eqID(a.Identify(), b.Identify()) {
@@ -108,8 +123,7 @@ func (def VarDef) Identify() ID {
 }
 
 func cmpVarDef(a, b VarDef) Result {
-	// TODO
-	return Equal
+	return cmpExpr(a.spec.Type, b.spec.Type)
 }
 
 // ConstDef is the definition of a single constant.
@@ -179,4 +193,92 @@ func (def NoDef) Identify() ID {
 	return ID{
 		name: def.name,
 	}
+}
+
+func cmpExpr(a, b ast.Expr) Result {
+	/*
+		*ast.Expr nodes can be:
+
+		*BadExpr
+		*Ident
+		*Ellipsis
+		*BasicLit
+		*FuncLit
+		*CompositeLit
+		*ParenExpr
+		*SelectorExpr
+		*IndexExpr
+		*SliceExpr
+		*TypeAssertExpr
+		*CallExpr
+		*StarExpr
+		*UnaryExpr
+		*BinaryExpr
+		*KeyValueExpr
+
+		*ArrayType
+		*StructType
+		*FuncType
+		*InterfaceType
+		*MapType
+		*ChanType
+
+		Not all of those can appear in variable definitions.
+	*/
+
+	if reflect.TypeOf(a) != reflect.TypeOf(b) {
+		return Major
+	}
+
+	switch ta := a.(type) {
+	case *ast.BasicLit:
+		tb := b.(*ast.BasicLit)
+		if ta.Kind == tb.Kind {
+			// TODO: Compare ta.Value and tb.Value
+			return Equal
+		} else {
+			return Major
+		}
+
+	case *ast.FuncLit:
+
+	case *ast.ArrayType:
+		tb := b.(*ast.ArrayType)
+		return cmpExpr(ta.Elt, tb.Elt)
+
+	case *ast.StructType:
+
+	case *ast.FuncType:
+
+	case *ast.InterfaceType:
+
+	case *ast.MapType:
+		tb := b.(*ast.MapType)
+		return max(
+			cmpExpr(ta.Key, tb.Key),
+			cmpExpr(ta.Value, tb.Value),
+		)
+
+	case *ast.ChanType:
+		tb := b.(*ast.ChanType)
+		if ta.Dir > tb.Dir {
+			return Major
+		} else {
+			vals := cmpExpr(ta.Value, tb.Value)
+
+			var dirs Result
+			if ta.Dir == tb.Dir {
+				dirs = Equal
+			} else {
+				dirs = Minor
+			}
+
+			return max(dirs, vals)
+		}
+
+	default:
+		panic(fmt.Sprintf("Unexpected type %s", ta))
+	}
+
+	return Equal
 }

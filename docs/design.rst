@@ -1,6 +1,11 @@
 Design
 ======
 
+I think I want to leverage more of the existing stdlib. Rewrite the AST to
+contain only exported names and use comparisons with reflect.TypeOf for the
+comparisons themselves. Otherwise I'll spend most of my time reinventing parts
+of the reflect.Type interface.
+
 The heart of this software is a diff function whose signature is something
 like::
 
