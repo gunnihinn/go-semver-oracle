@@ -16,6 +16,14 @@ type Null struct{}
 
 func (n Null) compare() {}
 
+// Ident is a Go identifier.
+type Ident struct {
+	Name string
+	orig ast.Node
+}
+
+func (n Ident) compare() {}
+
 // Primitive is a Go primitive.
 type Primitive int
 
@@ -283,6 +291,10 @@ func parseExpr(e ast.Expr) (Comparable, error) {
 
 	switch te := e.(type) {
 	case *ast.Ident:
+		return Ident{
+			Name: te.Name,
+			orig: te,
+		}, nil
 
 	case *ast.BasicLit:
 
