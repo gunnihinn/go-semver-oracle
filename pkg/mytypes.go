@@ -297,20 +297,67 @@ func parseExpr(e ast.Expr) (Comparable, error) {
 		}, nil
 
 	case *ast.BasicLit:
+		panic("Not done")
 
 	case *ast.FuncLit:
+		panic("Not done")
 
 	case *ast.ArrayType:
+		vals, err := parseExpr(te.Elt)
+		if err != nil {
+			return Array{}, err
+		}
+
+		return Array{
+			Values: vals,
+			orig:   te,
+		}, nil
 
 	case *ast.StructType:
+		panic("Not done")
 
 	case *ast.FuncType:
+		panic("Not done")
 
 	case *ast.InterfaceType:
+		panic("Not done")
 
 	case *ast.MapType:
+		key, err := parseExpr(te.Key)
+		if err != nil {
+			return Map{}, err
+		}
+
+		val, err := parseExpr(te.Value)
+		if err != nil {
+			return Map{}, err
+		}
+
+		return Map{
+			Key:   key,
+			Value: val,
+			orig:  te,
+		}, nil
 
 	case *ast.ChanType:
+		val, err := parseExpr(te.Value)
+		if err != nil {
+			return Channel{}, err
+		}
+
+		var dir Direction
+		if te.Dir&ast.SEND != 0 {
+			dir |= Send
+		}
+		if te.Dir&ast.RECV != 0 {
+			dir |= Receive
+		}
+
+		return Channel{
+			Type: val,
+			Dir:  dir,
+			orig: te,
+		}, nil
 
 	default:
 		return Null{}, fmt.Errorf("Unexpected type %s", te)
